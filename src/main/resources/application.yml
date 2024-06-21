@@ -1,0 +1,33 @@
+spring:
+  application:
+    name: csproj
+
+  cassandra:
+    keyspace-name: psql
+    contact-points: localhost
+    schema-action: create_if_not_exists
+    port: 9042
+    local-datacenter: datacenter1
+
+  cache:
+    type: redis
+  data:
+    redis:
+      host: localhost
+      port: 6379
+
+logging:
+  level:
+    org:
+      springframework:
+        boot: INFO
+        data:
+          cassandra:
+            core:
+              cql:
+                CqlTemplate: INFO
+
+server:
+  port: 8081
+
+

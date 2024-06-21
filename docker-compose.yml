@@ -1,0 +1,43 @@
+# docker-compose.yaml
+version: '3'
+services:
+  cassandra:
+    container_name: cassandra_db
+    image: cassandra:4.0
+    environment:
+      CASSANDRA_CLUSTER_NAME: my-cluster
+      CASSANDRA_BROADCAST_ADDRESS: cassandra
+      #CASSANDRA_LISTEN_ADDRESS: 0.0.0.0
+      #CASSANDRA_RPC_ADDRESS: 0.0.0.0
+      MAX_HEAP_SIZE: 256M
+      HEAP_NEWSIZE: 128M
+    ports:
+      - "9042:9042"
+    volumes:
+      #- cassandra-data:/var/lib/cassandra
+      - ./docker-data/cassandra:/var/lib/cassandra
+      - ./create-keyspace.cql:/docker-entrypoint-initdb.d/create-keyspace.cql
+
+  psql_countries_api:
+    container_name: psql_countries_api
+    image: ivanzo/psql:latest
+    environment:
+      - SPRING_DATA_CASSANDRA_CONTACT_POINTS=cassandra
+      - SPRING_REDIS_HOST=redis
+    ports:
+      - "8081:8081"
+    depends_on:
+      - cassandra
+      - redis
+
+  redis:
+    container_name: redis
+    image: redis:latest
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-data:/data
+
+volumes:
+  cassandra-data:
+  redis-data:
